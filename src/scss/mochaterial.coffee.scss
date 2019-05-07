@@ -1,0 +1,20 @@
+// Set the Sass variables to override
+$mdc-theme-primary: #5d3b1e;
+$mdc-theme-secondary: #e8c89e;
+$mdc-theme-surface: #8c6546;
+$mdc-theme-on-surface: #FFFFFF;
+$mdc-theme-text-primary-on-background: #5d3b1e;
+$mdc-theme-text-hint-on-background: #8c6546;
+
+$mocha-passed: #76ff03;
+$mocha-failed: #ffa4a2;
+// Note: fast, slow, replay can be dropped since they're inherited
+
+$icon-blocked: "error";
+$icon-passed-count: "check_circle_outline";
+$icon-failed-count: "highlight_off";
+$icon-pending-count: "pause_circle_outline";
+$icon-blocked-count: "error_outline"; 
+
+// Now import the base scss
+@import "mochaterial";

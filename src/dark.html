@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Mochaterial Dark</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" type="image/x-icon" href="https://www.netpoint.de/favicon.ico">
+  <link rel="icon" type="image/ico" href="https://www.netpoint.de/favicon.ico">
+    
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="modulepreload" href="https://unpkg.com/@material/switch@2.0.0/index.js?module" as="script">
+  <link rel="modulepreload" href="https://unpkg.com/@material/top-app-bar@2.0.0/index.js?module" as="script">
+
+  <link rel="stylesheet" href="./css/mochaterial.dark.css">
+</head>
+<body>
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.min.js"></script>
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/mocha/6.1.4/mocha.js"></script>
+  <script type="module">
+    import { Mochaterial } from "./mochaterial.mjs";
+    
+    mocha.setup({
+      ui: 'bdd',
+      reporter: Mochaterial,
+      reporterOptions: { 
+        // Available highlight.js styles: https://cdnjs.com/libraries/highlight.js/
+        hljsStylesUrl: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/tomorrow-night-bright.min.css"
+      }       
+    });
+  </script>
+
+  <script type="module" src="./samples/root.js"></script>
+  <script type="module" src="./samples/pending.js"></script>
+  <script type="module" src="./samples/blocked.js"></script>
+  <script type="module" src="./samples/hooks.js"></script>
+  <script type="module" src="./samples/compare.js"></script>
+  <script type="module" src="./samples/duration.js"></script>
+  <script type="module" src="./samples/formatboundries.js"></script>
+
+  <script type="module">
+    mocha.checkLeaks();
+    mocha.run();
+  </script>
+
+  <noscript>
+    Um, this page tests JavaScript files using a JavaScript framework, and JavaScript is disabled in your browser.<br>
+    We're pretty sure you understand why that's not going to work, right?<br>
+    Here are the <a href="https://www.enable-javascript.com/" target="_blank" rel="noopener">instructions</a> on how to enable JavaScript in your web browser.
+  </noscript>
+</body>
+</html>

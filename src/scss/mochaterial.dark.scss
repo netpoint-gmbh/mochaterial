@@ -1,0 +1,27 @@
+$mdc-theme-primary: #27272f;
+$mdc-theme-on-primary: #FFFFFF;
+$mdc-theme-secondary: #00b0ff;
+$mdc-theme-on-secondary: #FFFFFF;
+$mdc-theme-surface: #373740;
+$mdc-theme-on-surface: #FFFFFF;
+$mdc-theme-background: #33333D;
+$mdc-theme-on-background: #FFFFFF;
+
+$mocha-passed: #76FF03;
+$mocha-failed: #ff867c; //#ff6659; //#ff5f52; //#ff0e36; //#ff1744;
+$mocha-pending: #FFFF00;
+$mocha-blocked: #ff7df2; //#ffb2d2; //#d500f9;
+
+//$mocha-fast: $mocha-passed !default;
+$mocha-medium: #ffa726;
+//$mocha-slow: $mocha-failed !default;
+//$mocha-timeout: $mocha-failed !default;
+$mocha-replay: #00b0ff;
+
+@import "mochaterial";
+
+code.stack {
+    .hljs-link {
+        color: #00b0ff;
+    }
+}

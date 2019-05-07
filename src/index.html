@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Mochaterial</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" type="image/x-icon" href="https://www.netpoint.de/favicon.ico">
+  <link rel="icon" type="image/ico" href="https://www.netpoint.de/favicon.ico">
+
+  <!-- While not required, these preloads offer some micro performance improvements (when supported)-->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="modulepreload" href="https://unpkg.com/@material/switch@2.0.0/index.js?module" as="script">
+  <link rel="modulepreload" href="https://unpkg.com/@material/top-app-bar@2.0.0/index.js?module" as="script">
+
+  <!-- Load the base mocha styles for the default html reporter if you wish, but Mochaterial doesn't use them -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/6.1.4/mocha.min.css">
+
+  <link rel="stylesheet" href="./css/mochaterial.css">
+</head>
+<body>
+  <!-- #mocha is unused by Mochaterial, but you'll need it to switch back to the default html reporter -->
+  <div id="mocha"></div>
+
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.min.js"></script>
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/mocha/6.1.4/mocha.js"></script>
+  <script type="module">
+    import { Mochaterial } from "./mochaterial.mjs";
+     
+    mocha.setup({
+      ui: 'bdd', 
+      reporter: Mochaterial,
+      // Available reporter options, defaults shown for reference
+      reporterOptions: { 
+        title : "document.title",         // string
+        titlePath: "window.location",     // string
+        showHooksDefault: true,           // boolean
+        rootSuiteTitle: "Isolated Tests", // string
+        indentSuites: "tablet-up",        // "no-indent" | "indent" | "tablet-up" 
+        codeBackground: "surface",        // "hljs" | "surface"
+        codeDefaultText: "on-surface",    // "hljs" | "on-surface"
+        diffFormat: "side-by-side",       // "line-by-line" | "side-by-side"
+        // Available highlight.js styles: https://cdnjs.com/libraries/highlight.js/
+        hljsStylesUrl: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/googlecode.min.css"
+      }
+    });   
+  </script>
+  
+  <script type="module" src="./samples/root.js"></script>
+  <script type="module" src="./samples/pending.js"></script>
+  <script type="module" src="./samples/blocked.js"></script>
+  <script type="module" src="./samples/hooks.js"></script>
+  <script type="module" src="./samples/compare.js"></script>
+  <script type="module" src="./samples/duration.js"></script>
+  <script type="module" src="./samples/formatboundries.js"></script>
+
+  <script type="module">
+    mocha.checkLeaks();
+    mocha.run();
+  </script>
+
+  <!--     
+    The following markup is for browsers that don't support native es6 modules: https://caniuse.com/#feat=es6-module
+    Note that Edge (16-18) fetches all of this, even though it doesn't execute them 
+  -->
+  <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.min.js"></script>
+  <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/mocha/6.1.4/mocha.js"></script>
+  <script nomodule src="https://unpkg.com/stacktrace-js@2.0.0/dist/stacktrace.min.js"></script>
+  <script nomodule src="./umd.mochaterial.js"></script>
+
+  <script nomodule >
+    mocha.setup({
+      ui: 'bdd',
+      reporter: UMD.Mochaterial
+    });
+  </script>
+
+  <script nomodule src="./samples/pending.js"></script>
+  <script nomodule src="./samples/blocked.js"></script>
+  <script nomodule src="./samples/hooks.js"></script>
+  <script nomodule src="./samples/compare.js"></script>
+  <script nomodule src="./samples/duration.js"></script>
+  <script nomodule src="./samples/formatboundries.js"></script>
+
+  <script nomodule>
+    mocha.checkLeaks();
+    mocha.run();
+  </script>
+
+  <noscript>
+    Um, this page tests JavaScript files using a JavaScript framework, and JavaScript is disabled in your browser.<br>
+    We're pretty sure you understand why that's not going to work, right?<br>
+    Here are the <a href="https://www.enable-javascript.com/" target="_blank" rel="noopener">instructions</a> on how to enable JavaScript in your web browser.
+  </noscript>
+</body>
+</html>
