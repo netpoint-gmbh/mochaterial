@@ -47,7 +47,7 @@ function workers() {
 function markup() {
   return src('./src/*.html')
     .pipe(dest('build/'))
-    .pipe(replace('./', 'https://unpkg.com/@netpoint-gmbh/mochaterial/0.0.1-beta.4/'))
+    .pipe(replace('./', 'https://unpkg.com/@netpoint-gmbh@mochaterial@0.0.1-beta.5/'))
     .pipe(dest('dist/'));
 }
 
