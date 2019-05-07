@@ -37,6 +37,5 @@
         "rollup-plugin-commonjs": "^9.3.4",
         "rollup-plugin-node-resolve": "^4.2.3",
         "typescript": "^3.4.5"
-    },
-    "files": ["dist/**/*.{js,mjs,css,html,gz}"]
+    }
 }
