@@ -9,7 +9,7 @@ export default [{
     format: 'esm',
     compact: true,
     paths: {
-      '@material/switch/index': 'https://unpkg.com/@material/switch@1.0.1/index.js?module',
+      '@material/switch/index': 'https://unpkg.com/@material/switch@2.0.0/index.js?module',
       '@material/top-app-bar/index': 'https://unpkg.com/@material/top-app-bar@2.0.0/index.js?module',
       // MDCDrawer requires focus-trap 5, which isn't loadable as an es6 module yet, so we must bundle MDCDrawer...
       // Reference Issue: https://github.com/davidtheclark/focus-trap/issues/30
