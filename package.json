@@ -1,9 +1,9 @@
 {
     "name": "@netpoint-gmbh/mochaterial",
-    "version": "0.0.1-beta.0",
+    "version": "0.0.1-beta.1",
     "description": "Delivering material results from Mocha.js",
     "author": "Brian Lagerman <lagerman@netpoint.de> (https://www.netpoint.de/)",
-    "homepage": "https://www.netpoint.de/en/compentence/mochaterial",
+    "homepage": "https://www.netpoint.de/en/competence/mochaterial",
     "keywords": [
       "mocha",
       "reporter",
