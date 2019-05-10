@@ -13,7 +13,7 @@
   <link rel="modulepreload" href="https://unpkg.com/@material/top-app-bar@2.0.0/index.js?module" as="script">
   
   <!-- Load default theme stylesheet -->
-  <link rel="stylesheet" href="./mochaterial.css">
+  <link rel="stylesheet" href="./css/mochaterial.css">
   <style>
     /* Override mdc-theme & mocha colors, and set Material Icons as desired */ 
     :root {
@@ -45,9 +45,12 @@
     import { Mochaterial } from "./mochaterial.mjs";
      
     mocha.setup({
-      ui:'bdd', 
-      reporter:Mochaterial,
+      ui: 'bdd', 
+      reporter: Mochaterial,
       reporterOptions: {
+        codeBackground: "hljs",
+        codeDefaultText: "hljs",
+        diffFormat: "line-by-line",
         // Available highlight.js styles: https://cdnjs.com/libraries/highlight.js/
         hljsStylesUrl: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/kimbie.light.min.css"
       }

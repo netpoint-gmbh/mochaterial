@@ -47,7 +47,7 @@ function workers() {
 function markup() {
   return src('./src/*.html')
     .pipe(dest('build/'))
-    .pipe(replace('./', 'https://unpkg.com/@netpoint-gmbh@mochaterial@0.0.1-beta.5/'))
+    .pipe(replace('./', 'https://unpkg.com/@netpoint-gmbh/mochaterial/'))
     .pipe(dest('dist/'));
 }
 
@@ -71,6 +71,11 @@ function minifyjs() {
     .pipe(gzip())
     .pipe(dest('dist/'));
 }
+function prepPublish() {
+  // We're releasing from dist, so copy assets there...
+  return src(['package.json', 'readme.md'])
+  .pipe(dest('dist'));
+}
 function server() {
   browserSync.init({
       server: {
@@ -82,7 +87,7 @@ function server() {
 const build = 
   series(
     clean, 
-    parallel(styles, compile, samples, workers, markup),
+    parallel(styles, compile, samples, workers, markup, prepPublish),
     rollup,
     minifyjs
   );

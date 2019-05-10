@@ -947,7 +947,7 @@ export class Mochaterial extends Mocha.reporters.Base  {
     // Blocked tests run last, after all hooks finish
     // so if a failing hook can be found within this suite, move this test
     // after that hook for better flow
-    const failHook = test.parent.get(SuiteId.Suite).querySelector(`li.hook.failed[for="${this.quot(test.title)}"`);
+    const failHook = test.parent.get(SuiteId.Suite).querySelector(`li.hook.failed[for="${this.quot(test.title)}"]`);
     if (failHook) {
       (<any>failHook).after(test.parent.get(SuiteId.Item));
     } 
