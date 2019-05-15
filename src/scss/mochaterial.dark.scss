@@ -19,7 +19,7 @@ $mocha-medium: #ffa726;
 $mocha-replay: #00b0ff;
 
 @import "mochaterial";
-
+@import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/tomorrow-night-bright.min.css");
 code.stack {
     .hljs-link {
         color: #00b0ff;

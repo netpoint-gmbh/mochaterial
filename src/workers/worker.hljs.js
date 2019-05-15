@@ -1,3 +1,4 @@
+// This file to be removed in favor of Blob workers
 importScripts('./highlight.pack.js');
 
 onmessage = function(event) {

@@ -4,7 +4,7 @@
  * A browser based reporter for mocha.js written as a native ES6 module
  * for a drop-in replacement of mochas default html reporter
  *
- * @link   https://www.netpoint.de/en/mochaterial
+ * @link   https://www.netpoint.de/en/competence/mochaterial/
  * @author Brian Lagerman <https://github.com/orgs/netpoint-gmbh/people/brian-lagerman>
  * @license MIT
  */
@@ -19,9 +19,9 @@ import 'https://unpkg.com/stacktrace-js@2.0.0/dist/stacktrace.min.js';
 declare var StackTrace:any;
 
 // Allow Mocha setup in browser entry to accept reporterOptions
-(<any>Mocha.prototype).reporterOptions = function (reporterOptions: any) {
+ (<any>Mocha.prototype).reporterOptions = function (reporterOptions: any) {
   this.options.reporterOptions = reporterOptions;
-}
+} 
 
 interface MochaterialOptions {
   title: string;
@@ -32,7 +32,6 @@ interface MochaterialOptions {
   codeBackground: "hljs" | "surface";
   codeDefaultText: "hljs" | "on-surface";
   diffFormat: "line-by-line" | "side-by-side";
-  hljsStylesUrl: string;
 }
 
 type idOf = (item: SuiteId) => string;
@@ -82,18 +81,26 @@ interface Duration {
   time: string,
 }
 
-interface Highlight {
+interface HighlightData {
   elementId: string,
   language: string,
   content: string,
 }
 
-interface Compare {
+interface HighlightEvent {
+  data: HighlightData
+}
+
+interface CompareData {
   elementId: string,
   actual: string;
   expected: string,
   diffFormat: string,
   content: string,
+}
+
+interface CompareEvent {
+  data: CompareData
 }
 
 const enum HookType {
@@ -196,8 +203,7 @@ const DefaultOptions: MochaterialOptions = {
   indentSuites: "tablet-up",
   codeBackground: "surface",
   codeDefaultText: "on-surface",
-  diffFormat: "side-by-side",
-  hljsStylesUrl: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/googlecode.min.css"
+  diffFormat: "side-by-side"
 }
 
 /**
@@ -238,12 +244,6 @@ export class Mochaterial extends Mocha.reporters.Base  {
     
     this.stats.blocked = 0;
     this.stats.hookFailures = 0;
-    
-    let hljsCss = document.createElement("link");
-    hljsCss.type = "text/css";
-    hljsCss.rel = "stylesheet";
-    hljsCss.href = this.options.hljsStylesUrl;
-    document.head.appendChild(hljsCss);
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('grep')) {
@@ -253,13 +253,13 @@ export class Mochaterial extends Mocha.reporters.Base  {
     this.codeStyle = (this.options.codeBackground == "surface") ? "surface " : "";
     this.codeStyle += (this.options.codeDefaultText == "on-surface") ? "on-surface" : "";
 
-    this.highlighter.onmessage = function(event: MessageEvent) { 
-      document.getElementById((<Highlight>event.data).elementId).innerHTML = (<Highlight>event.data).content; 
+    this.highlighter.onmessage = function(event: HighlightEvent) { 
+      document.getElementById(event.data.elementId).innerHTML = event.data.content; 
     }
 
-    this.comparer.onmessage = function(event: MessageEvent) {
-      const diff = document.getElementById((<Compare>event.data).elementId);
-      diff.innerHTML = (<Compare>event.data).content;
+    this.comparer.onmessage = function(event: CompareEvent) {
+      const diff = document.getElementById(event.data.elementId);
+      diff.innerHTML = event.data.content;
       
       // Add unified scrolling when side by side
       const sides = diff.querySelectorAll(".d2h-side-by-side");
@@ -273,9 +273,6 @@ export class Mochaterial extends Mocha.reporters.Base  {
   
   private options: MochaterialOptions;
   
-  private highlighter = new Worker('./workers/worker.hljs.js');
-  private comparer = new Worker('./workers/worker.diff2Html.js');
-
   private grep: RegExp;
   private codeStyle: string;
   public stats = this.stats;
@@ -311,6 +308,45 @@ export class Mochaterial extends Mocha.reporters.Base  {
   private toggleHooksListener = () => this.toggleBody("hide-hooks");
   private toggleSuitesListener = () => this.toggleBody("hide-suites");
   private toggleTestsListener = () => this.toggleExpandables();
+
+  private hljs = function(event: HighlightEvent) {
+    const result = (<any>self).hljs.highlight(event.data.language, event.data.content, false);
+    (<any>self).postMessage({elementId: event.data.elementId, language: event.data.language, content: result.value});
+  }
+
+  private diff2html = function(event: CompareEvent) {
+    let diffHtml: string;
+    if (event.data.actual == event.data.expected) {
+      diffHtml = '<div class="diff-identical">Actual and Expected values match, both contain:\n    ' + event.data.actual + '</div>';
+    } else {
+      const raw = {
+        'side-by-side-file-diff':'<div class="d2h-side-by-side d2h-left scrollbar"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs.left}}}</tbody></table></div><div class="d2h-side-by-side d2h-right scrollbar"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs.right}}}</tbody></table></div>',
+        'line-by-line-file-diff':'<div class="d2h-line-by-line"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs}}}</tbody></table></div>',
+        'generic-line':'<tr class="{{type}}"><td class="{{lineClass}}">{{{lineNumber}}}</td><td class="{{type}}"><div class="{{contentClass}} {{type}}">{{#prefix}}<span class="d2h-code-line-prefix">{{{prefix}}}</span>{{/prefix}}{{#content}}<span class="d2h-code-line-ctn">{{{content}}}</span>{{/content}}</div></td></tr>'
+      }
+      diffHtml = (<any>self).Diff2Html.getPrettyHtml(
+        (<any>self).Diff.createPatch('string', event.data.actual, event.data.expected),
+          {inputFormat: 'diff', showFiles: false, matching: 'words', outputFormat: event.data.diffFormat, rawTemplates: raw}
+      );
+    }
+    (<any>self).postMessage({elementId: event.data.elementId, content: diffHtml});
+  }
+
+  private highlighter = this.createWorker(this.hljs, new Array('https://unpkg.com/@netpoint-gmbh/mochaterial/workers/highlight.pack.js'));
+  private comparer = this.createWorker(this.diff2html, new Array('https://unpkg.com/diff@4.0.1/dist/diff.min.js', 'https://unpkg.com/diff2html@2.7.0/dist/diff2html.min.js'));
+
+  private createWorker(fn: Function, imports?:string[]): Worker {
+    let blobContent: string[] = [];
+    if (imports) {
+      const importScripts = "importScripts('" + imports.join("', '") + "');\n";
+      blobContent.push(importScripts);
+    }
+    blobContent.push("onmessage = " + fn.toString());
+
+    const blob = new Blob(blobContent, { "type": 'application/javascript' });
+    const url = window.URL.createObjectURL(blob);
+    return new Worker(url);
+  }
 
   private get(elementId: Id) : HTMLElement {
     return document.getElementById(elementId);
@@ -1133,7 +1169,7 @@ export class Mochaterial extends Mocha.reporters.Base  {
   }
 
   private highlightCode(code:HTMLElement, language:string) {
-    const data: Highlight = {
+    const data: HighlightData = {
       elementId: code.id,
       language: language,
       content: code.textContent,
@@ -1143,7 +1179,7 @@ export class Mochaterial extends Mocha.reporters.Base  {
   }
 
   private compareDiff(code:HTMLElement, error: AssertionError) {
-    const data: Compare = {
+    const data: CompareData = {
       elementId: code.id,
       actual: error.actual,
       expected: error.expected,

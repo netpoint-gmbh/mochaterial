@@ -13,14 +13,11 @@ const DefaultOptions = {
     indentSuites: "tablet-up",
     codeBackground: "surface",
     codeDefaultText: "on-surface",
-    diffFormat: "side-by-side",
-    hljsStylesUrl: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/googlecode.min.css"
+    diffFormat: "side-by-side"
 };
 export class Mochaterial extends Mocha.reporters.Base {
     constructor(runner, options) {
         super(runner, options);
-        this.highlighter = new Worker('./workers/worker.hljs.js');
-        this.comparer = new Worker('./workers/worker.diff2Html.js');
         this.stats = this.stats;
         this.suiteCount = 0;
         this.currentFilter = "passed";
@@ -44,6 +41,27 @@ export class Mochaterial extends Mocha.reporters.Base {
         this.toggleHooksListener = () => this.toggleBody("hide-hooks");
         this.toggleSuitesListener = () => this.toggleBody("hide-suites");
         this.toggleTestsListener = () => this.toggleExpandables();
+        this.hljs = function (event) {
+            const result = self.hljs.highlight(event.data.language, event.data.content, false);
+            self.postMessage({ elementId: event.data.elementId, language: event.data.language, content: result.value });
+        };
+        this.diff2html = function (event) {
+            let diffHtml;
+            if (event.data.actual == event.data.expected) {
+                diffHtml = '<div class="diff-identical">Actual and Expected values match, both contain:\n    ' + event.data.actual + '</div>';
+            }
+            else {
+                const raw = {
+                    'side-by-side-file-diff': '<div class="d2h-side-by-side d2h-left scrollbar"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs.left}}}</tbody></table></div><div class="d2h-side-by-side d2h-right scrollbar"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs.right}}}</tbody></table></div>',
+                    'line-by-line-file-diff': '<div class="d2h-line-by-line"><table class="d2h-diff-table"><tbody class="d2h-diff-tbody">{{{diffs}}}</tbody></table></div>',
+                    'generic-line': '<tr class="{{type}}"><td class="{{lineClass}}">{{{lineNumber}}}</td><td class="{{type}}"><div class="{{contentClass}} {{type}}">{{#prefix}}<span class="d2h-code-line-prefix">{{{prefix}}}</span>{{/prefix}}{{#content}}<span class="d2h-code-line-ctn">{{{content}}}</span>{{/content}}</div></td></tr>'
+                };
+                diffHtml = self.Diff2Html.getPrettyHtml(self.Diff.createPatch('string', event.data.actual, event.data.expected), { inputFormat: 'diff', showFiles: false, matching: 'words', outputFormat: event.data.diffFormat, rawTemplates: raw });
+            }
+            self.postMessage({ elementId: event.data.elementId, content: diffHtml });
+        };
+        this.highlighter = this.createWorker(this.hljs, new Array('https://unpkg.com/@netpoint-gmbh/mochaterial/workers/highlight.pack.js'));
+        this.comparer = this.createWorker(this.diff2html, new Array('https://unpkg.com/diff@4.0.1/dist/diff.min.js', 'https://unpkg.com/diff2html@2.7.0/dist/diff2html.min.js'));
         this.options = Object.assign({}, DefaultOptions, (options && options.reporterOptions));
         document.body.classList.add("mochaterial");
         if (!this.options.showHooksDefault) {
@@ -63,11 +81,6 @@ export class Mochaterial extends Mocha.reporters.Base {
         runner.on('end', () => this.finish());
         this.stats.blocked = 0;
         this.stats.hookFailures = 0;
-        let hljsCss = document.createElement("link");
-        hljsCss.type = "text/css";
-        hljsCss.rel = "stylesheet";
-        hljsCss.href = this.options.hljsStylesUrl;
-        document.head.appendChild(hljsCss);
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('grep')) {
             this.grep = new RegExp(urlParams.get('grep'));
@@ -87,6 +100,17 @@ export class Mochaterial extends Mocha.reporters.Base {
                 });
             });
         };
+    }
+    createWorker(fn, imports) {
+        let blobContent = [];
+        if (imports) {
+            const importScripts = "importScripts('" + imports.join("', '") + "');\n";
+            blobContent.push(importScripts);
+        }
+        blobContent.push("onmessage = " + fn.toString());
+        const blob = new Blob(blobContent, { "type": 'application/javascript' });
+        const url = window.URL.createObjectURL(blob);
+        return new Worker(url);
     }
     get(elementId) {
         return document.getElementById(elementId);
