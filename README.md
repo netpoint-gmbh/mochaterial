@@ -6,7 +6,7 @@ An ES6 Browser reporter for [Mocha.js](https://mochajs.org/)
 
 [![Mochaterial Dark](https://netpoint-gmbh.github.io/images/mochaterial/mochaterial-dark.png)](https://netpoint-gmbh.github.io/mochaterial/dark.html)
 
-Themes [Default](https://netpoint-gmbh.github.io/mochaterial/) and [Coffee](https://netpoint-gmbh.github.io/mochaterial/coffee.html) are provided as well. Check out our [project page](https://www.netpoint.de/en/competence/mochaterial/) for setup and customization information.
+Themes [Default](https://netpoint-gmbh.github.io/mochaterial/) and [Coffee](https://netpoint-gmbh.github.io/mochaterial/coffee.html) are provided as well. Check out our [project page](https://netpoint-gmbh.github.io/) for setup and customization information.
 
 ## CodePen
 Beta-8 swapped the web workers from files to blobs, so tools like [CodePen](https://codepen.io/brian-lagerman/pen/MdjXje) should be fully functional.
